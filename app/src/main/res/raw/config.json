@@ -1,0 +1,13 @@
+
+{
+  "end_session_redirect_uri": "com.okta.dev-31493529:/logout",
+  "redirect_uri": "com.okta.dev-31493529:/logincallback",
+  "scopes": [
+    "openid",
+    "profile",
+    "offline_access"
+  ],
+  "issuer": "https://dev-31493529.okta.com/oauth2/default",
+  "client_id": "0oa3otfoy0qpJWlQi5d7",
+  "discovery_uri": "https://dev-31493529.okta.com/oauth2/default"
+}
