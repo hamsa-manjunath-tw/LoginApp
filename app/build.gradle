@@ -19,14 +19,12 @@ android {
         }
 
         manifestPlaceholders = [
-                //"appAuthRedirectScheme": "com.okta.sample-app"
-                "appAuthRedirectScheme": "com.okta.dev-31493529"
-
+                "appAuthRedirectScheme": "com.okta.dev-27776578"
         ]
         if (project.rootProject.file('local.properties').exists()) {
             Properties properties = new Properties()
             properties.load(project.rootProject.file('local.properties').newDataInputStream())
-            buildConfigField "String", "ORG_URL", properties.getProperty('authn.orgUrl', '"https://dev-31493529.okta.com/oauth2/default"')
+            buildConfigField "String", "ORG_URL", properties.getProperty('authn.orgUrl', '"https://dev-27776578.okta.com/oauth2/default"')
         }
     }
 
