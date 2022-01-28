@@ -21,6 +21,7 @@ fun LoginScreen(activity: Activity) {
     val viewModel: LoginScreenViewModel =
         viewModel()
 
+
     Surface(color = MaterialTheme.colors.background) {
         var textFieldState by remember {
             mutableStateOf("")
@@ -38,49 +39,47 @@ fun LoginScreen(activity: Activity) {
                     .fillMaxSize()
                     .padding(horizontal = 30.dp)
             ) {
-                TextField(value = textFieldState, label = {
-                    Text("User hint (optional)")
-                }, onValueChange = {
-                    textFieldState = it
-                },
-                    singleLine = true,
-                    modifier = Modifier.fillMaxWidth()
-                )
 
-                Spacer(modifier = Modifier.height(16.dp))
-                var loader by remember { mutableStateOf(false) }
-                if (loader) {
-                    CircularProgressIndicator()
-                }
-                Button(onClick = {
-                    loader = !loader
-                    viewModel.userName.value = textFieldState
-                    viewModel.signIn(activity)
+                when (val state = viewModel.uiState.collectAsState().value) {
+                    is LoginScreenViewModel.LoginState.Initial -> {
+                        TextField(value = textFieldState, label = {
+                            Text("User hint (optional)")
+                        }, onValueChange = {
+                            textFieldState = it
+                        },
+                            singleLine = true,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    when (viewModel.state) {
-                        is LoginScreenViewModel.LoginState.Success -> {
-                            val intent = Intent(context, HomeActivity::class.java)
-                            context.startActivity(intent)
+                        Button(onClick = {
+                            viewModel.userName.value = textFieldState
+                            viewModel.signIn(activity)
+
+                        }, modifier = Modifier.fillMaxWidth()) {
+                            Text(text = "Sign in")
                         }
-                        is LoginScreenViewModel.LoginState.Error -> {
-                            Toast.makeText(
-                                context,
-                                (viewModel.state as LoginScreenViewModel.LoginState.Error).exception!!.message,
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        is LoginScreenViewModel.LoginState.Processing -> {
-                            loader = loader
-                        }
+
                     }
-
-                }, modifier = Modifier.fillMaxWidth()) {
-                    Text(text = "Sign in")
+                    is LoginScreenViewModel.LoginState.Success -> {
+                        val intent = Intent(context, HomeActivity::class.java)
+                        context.startActivity(intent)
+                    }
+                    is LoginScreenViewModel.LoginState.Error -> {
+                        Toast.makeText(
+                            context,
+                            state.exception!!.message,
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                    is LoginScreenViewModel.LoginState.Processing -> {
+                        CircularProgressIndicator()
+                    }
                 }
             }
         }
-    }
 
+    }
 }
 
 
