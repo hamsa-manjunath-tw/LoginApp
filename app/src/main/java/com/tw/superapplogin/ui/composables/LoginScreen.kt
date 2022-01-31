@@ -10,22 +10,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.tw.superapplogin.HomeActivity
+import com.tw.superapplogin.ui.views.Home
 import com.tw.superapplogin.viewmodel.LoginScreenViewModel
 
 
 @Composable
-fun LoginScreen(activity: Activity) {
+fun LoginScreen(activity: Activity, viewModel: LoginScreenViewModel) {
     val context = LocalContext.current
-    val viewModel: LoginScreenViewModel =
-        viewModel()
-
 
     Surface(color = MaterialTheme.colors.background) {
-        var textFieldState by remember {
-            mutableStateOf("")
-        }
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             topBar = {
@@ -39,31 +32,15 @@ fun LoginScreen(activity: Activity) {
                     .fillMaxSize()
                     .padding(horizontal = 30.dp)
             ) {
-
-                when (val state = viewModel.uiState.collectAsState().value) {
+                val state = viewModel.uiState.collectAsState().value
+                when ( state) {
                     is LoginScreenViewModel.LoginState.Initial -> {
-                        TextField(value = textFieldState, label = {
-                            Text("User hint (optional)")
-                        }, onValueChange = {
-                            textFieldState = it
-                        },
-                            singleLine = true,
-                            modifier = Modifier.fillMaxWidth()
-                        )
-                        Spacer(modifier = Modifier.height(16.dp))
-
-                        Button(onClick = {
-                            viewModel.userName.value = textFieldState
-                            viewModel.signIn(activity)
-
-                        }, modifier = Modifier.fillMaxWidth()) {
-                            Text(text = "Sign in")
-                        }
-
+                        GetLoginControls(viewModel, activity)
                     }
                     is LoginScreenViewModel.LoginState.Success -> {
-                        val intent = Intent(context, HomeActivity::class.java)
-                        context.startActivity(intent)
+                        /*val intent = Intent(context, HomeActivity::class.java)
+                        context.startActivity(intent)*/
+                        Home(activity,viewModel)
                     }
                     is LoginScreenViewModel.LoginState.Error -> {
                         Toast.makeText(
@@ -75,10 +52,25 @@ fun LoginScreen(activity: Activity) {
                     is LoginScreenViewModel.LoginState.Processing -> {
                         CircularProgressIndicator()
                     }
+                    is LoginScreenViewModel.LoginState.SignedOut -> {
+                        GetLoginControls(viewModel, activity)
+                    }
                 }
             }
         }
 
+    }
+}
+
+@Composable
+private fun GetLoginControls(
+    viewModel: LoginScreenViewModel,
+    activity: Activity
+) {
+    Button(onClick = {
+        viewModel.signIn(activity)
+    }, modifier = Modifier.fillMaxWidth()) {
+        Text(text = "Sign in")
     }
 }
 

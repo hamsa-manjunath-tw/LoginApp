@@ -10,8 +10,8 @@ import com.okta.oidc.util.AuthorizationException
 import com.tw.superapplogin.R
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import java.util.concurrent.Executors
 import kotlin.properties.Delegates
+
 
 class LoginScreenViewModel : ViewModel() {
     sealed class LoginState {
@@ -23,7 +23,6 @@ class LoginScreenViewModel : ViewModel() {
     }
 
     lateinit var webAuthClient: WebAuthClient
-    val userName = MutableLiveData<String>()
     var config: OIDCConfig by Delegates.notNull()
     private val _uiState = MutableStateFlow<LoginState>(LoginState.Initial)
     val uiState: StateFlow<LoginState> = _uiState
@@ -68,10 +67,15 @@ class LoginScreenViewModel : ViewModel() {
         registerCallBack(activity)
         webAuthClient.signIn(
             activity,
-            AuthenticationPayload.Builder().setLoginHint(userName.value).build()
+            null
         )
+
+        //AuthenticationPayload.Builder().setLoginHint("").build()
     }
 
-
+    fun signOut(activity: Activity)
+    {
+        webAuthClient.signOutOfOkta(activity)
+    }
 }
 
